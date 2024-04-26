@@ -4,11 +4,16 @@ return {
     ---@type AstroCoreOpts
     opts = {
       mappings = {
+        i = {
+          ["<C-\\>"] = { "<Esc>" .. "<Cmd>ToggleTerm<CR>", desc = "Toggle term" },
+        },
         -- first key is the mode
         n = {
           -- Buffer nav
           ["<S-h>"] = { "<cmd>bNext<cr>", desc = "Prev tab" },
           ["<S-l>"] = { "<cmd>bnext<cr>", desc = "Next tab" },
+          -- Terminal
+          ["<C-\\>"] = { '<Cmd>execute v:count . "ToggleTerm"<CR>', desc = "Toggle terminal" },
           -- second key is the lefthand side of the map
           -- mappings seen under group name "Buffer"
           ["<Leader>bn"] = { "<cmd>tabnew<cr>", desc = "New tab" },
@@ -27,6 +32,7 @@ return {
           -- ["<C-s>"] = { ":w!<cr>", desc = "Save File" },  -- change description but the same command
         },
         t = {
+          ["<C-\\>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle Terminal" },
           -- setting a mapping to false will disable it
           -- ["<esc>"] = false,
         },
