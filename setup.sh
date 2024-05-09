@@ -33,5 +33,36 @@ else
 	inf "font-hack-nerd-font is already installed."
 fi
 
+# Check for and install Pandoc if not already installed
+if ! command -v pandoc >/dev/null; then
+	inf "Installing Pandoc..."
+	brew install pandoc
+else
+	inf "Pandoc is already installed."
+fi
+
+# Check for and install MacTeX if not already installed
+if ! command -v pdflatex >/dev/null; then
+	inf "Installing MacTeX. This may take a while..."
+	brew install mactex
+
+	# Add MacTeX to PATH
+	echo "Adding MacTeX to PATH..."
+	TEX_PATH="/Library/TeX/texbin"
+	echo "export PATH=$TEX_PATH:\$PATH" >>~/.zshrc
+	source ~/.zshrc
+
+	inf "MacTeX installation completed."
+else
+	inf "MacTeX is already installed."
+fi
+
+# Validate LaTeX installation
+if command -v pdflatex >/dev/null; then
+	inf "Validation" "pdflatex is successfully installed and found in PATH."
+else
+	terminate_script "Failed to verify pdflatex installation. Check your installation and PATH."
+fi
+
 # Provide dependencies (space separated)
-dep_ch "gcc" "cmake" "rg" "lazygit" "python3" "node" || true
+dep_ch "gcc" "cmake" "rg" "lazygit" "python3" "node" "pandoc" "pdflatex" || true
