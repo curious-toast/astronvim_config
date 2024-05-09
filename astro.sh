@@ -19,6 +19,11 @@ test() {
 }
 
 update() {
+	rm -rf ~/.config/nvim.bak
+	rm -rf ~/.local/share/nvim.bak
+	rm -rf ~/.local/state/nvim.bak
+	rm -rf ~/.cache/nvim.bak
+
 	mv ~/.config/nvim ~/.config/nvim.bak
 	mv ~/.local/share/nvim ~/.local/share/nvim.bak
 	mv ~/.local/state/nvim ~/.local/state/nvim.bak
