@@ -15,6 +15,7 @@ return {
   { import = "astrocommunity.pack.docker" },
   { import = "astrocommunity.pack.helm" },
   { import = "astrocommunity.pack.yaml" },
+  { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.html-css" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
   { import = "astrocommunity.project/nvim-spectre" },
