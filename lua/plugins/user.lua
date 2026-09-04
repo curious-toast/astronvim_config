@@ -189,6 +189,7 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
+        "tree-sitter-cli", -- required by nvim-treesitter (main branch) to build parsers
         "ols", -- odin language server
         "prettier",
         "stylua",
