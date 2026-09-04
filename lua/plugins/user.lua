@@ -1,5 +1,5 @@
 -- =============================================================================
--- User config — all customizations live here.
+-- User config — all customizations live here.  (AstroNvim v6)
 --
 -- On a template re-scaffold, carry over just TWO files (pure file drop, no
 -- edits to any scaffolding):
@@ -84,6 +84,24 @@ local function yank_diagnostics(scope)
   vim.notify("Yanked " .. table.concat(summary, ", "), vim.log.levels.INFO)
 end
 
+-- Custom dashboard header (was alpha-nvim in v4; snacks.dashboard in v6).
+local dashboard_header = table.concat({
+  [[  =ccccc,      ,cccc       ccccc      ,cccc,  ?$$$$$$$,  ,ccc,   -ccc          ]],
+  [[ :::"$$$$bc    $$$$$     ::`$$$$$c,  : $$$$$c`:"$$$$???'`."$$$$c,:`?$$c        ]],
+  [[ `::::"?$$$$c,z$$$$F     `:: ?$$$$$c,`:`$$$$$h`:`?$$$,` :::`$$$$$$c,"$$h,      ]],
+  [[   `::::."$$$$$$$$$'    ..,,,:"$$$$$$h, ?$$$$$$c`:"$$$$$$$b':"$$$$$$$$$$$c     ]],
+  [[      `::::"?$$$$$$    :"$$$$c:`$$$$$$$$d$$$P$$$b`:`?$$$c : ::`?$$c "?$$$$h,   ]],
+  [[        `:::.$$$$$$$c,`::`????":`?$$$E"?$$$$h ?$$$.`:?$$$h..,,,:"$$$,:."?$$$c  ]],
+  [[          `: $$$$$$$$$c, ::``  :::"$$$b `"$$$ :"$$$b`:`?$$$$$$$c``?$F `:: "::  ]],
+  [[           .,$$$$$"?$$$$$c,    `:::"$$$$.::"$.:: ?$$$.:.???????" `:::  ` ```   ]],
+  [[           'J$$$$P'::"?$$$$h,   `:::`?$$$c`::``:: .:: : :::::''   `            ]],
+  [[          :,$$$$$':::::`?$$$$$c,  ::: "::  ::  ` ::'   ``                      ]],
+  [[         .'J$$$$F  `::::: .::::    ` :::'  `                                   ]],
+  [[        .: ???):     `:: :::::                                                 ]],
+  [[        : :::::'        `                                                      ]],
+  [[         ``                                                                    ]],
+}, "\n")
+
 ---@type LazySpec
 return {
   -- --- Colorscheme -----------------------------------------------------------
@@ -94,27 +112,16 @@ return {
     config = function() vim.cmd.colorscheme "matteblack" end,
   },
 
-  -- --- Alpha dashboard header ------------------------------------------------
+  -- --- Dashboard header (snacks.dashboard, replaces old alpha-nvim) ----------
   {
-    "goolord/alpha-nvim",
-    opts = function(_, opts)
-      opts.section.header.val = {
-        [[  =ccccc,      ,cccc       ccccc      ,cccc,  ?$$$$$$$,  ,ccc,   -ccc          ]],
-        [[ :::"$$$$bc    $$$$$     ::`$$$$$c,  : $$$$$c`:"$$$$???'`."$$$$c,:`?$$c        ]],
-        [[ `::::"?$$$$c,z$$$$F     `:: ?$$$$$c,`:`$$$$$h`:`?$$$,` :::`$$$$$$c,"$$h,      ]],
-        [[   `::::."$$$$$$$$$'    ..,,,:"$$$$$$h, ?$$$$$$c`:"$$$$$$$b':"$$$$$$$$$$$c     ]],
-        [[      `::::"?$$$$$$    :"$$$$c:`$$$$$$$$d$$$P$$$b`:`?$$$c : ::`?$$c "?$$$$h,   ]],
-        [[        `:::.$$$$$$$c,`::`????":`?$$$E"?$$$$h ?$$$.`:?$$$h..,,,:"$$$,:."?$$$c  ]],
-        [[          `: $$$$$$$$$c, ::``  :::"$$$b `"$$$ :"$$$b`:`?$$$$$$$c``?$F `:: "::  ]],
-        [[           .,$$$$$"?$$$$$c,    `:::"$$$$.::"$.:: ?$$$.:.???????" `:::  ` ```   ]],
-        [[           'J$$$$P'::"?$$$$h,   `:::`?$$$c`::``:: .:: : :::::''   `            ]],
-        [[          :,$$$$$':::::`?$$$$$c,  ::: "::  ::  ` ::'   ``                      ]],
-        [[         .'J$$$$F  `::::: .::::    ` :::'  `                                   ]],
-        [[        .: ???):     `:: :::::                                                 ]],
-        [[        : :::::'        `                                                      ]],
-        [[         ``                                                                    ]],
-      }
-    end,
+    "folke/snacks.nvim",
+    opts = {
+      dashboard = {
+        preset = {
+          header = dashboard_header,
+        },
+      },
+    },
   },
 
   -- --- AstroLSP (features, formatting, servers, autocmds, mappings) ----------
@@ -123,7 +130,6 @@ return {
     ---@type AstroLSPOpts
     opts = {
       features = {
-        autoformat = true,
         codelens = true,
         inlay_hints = false,
         semantic_tokens = true,
@@ -137,27 +143,18 @@ return {
         disabled = {},
         timeout_ms = 1000,
       },
-      -- Add your GDScript server name here
+      -- enable servers you already have installed without mason
       servers = {
         "gdscript",
       },
+      -- passed to `vim.lsp.config`
       config = {
         gdscript = {
           cmd = { "nc", "127.0.0.1", "6005" },
           filetypes = { "gd", "gdscript", "gdscript3" },
-          root_dir = require("lspconfig.util").root_pattern("project.godot"),
-        },
-        ols = {
-          -- defaults are fine; uncomment to customize
-          -- init_options = {
-          --   checker_args = "-strict-style",
-          --   collections = {
-          --     { name = "shared", path = vim.fn.expand "$HOME/odin-lib" },
-          --   },
-          -- },
+          root_markers = { "project.godot" },
         },
       },
-      handlers = {},
       autocmds = {
         lsp_document_highlight = {
           cond = "textDocument/documentHighlight",
@@ -184,34 +181,27 @@ return {
           },
         },
       },
-      on_attach = function(client, bufnr) end,
     },
   },
 
-  -- --- Mason (LSP + null-ls installs) ----------------------------------------
+  -- --- Mason package installs (mason-tool-installer, v6) ----------------------
   {
-    "williamboman/mason-lspconfig.nvim",
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
     opts = function(_, opts)
       opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
-        "ols",
-      })
-    end,
-  },
-  {
-    "jay-babu/mason-null-ls.nvim",
-    opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
+        "ols", -- odin language server
         "prettier",
         "stylua",
       })
     end,
   },
 
-  -- --- Treesitter parsers ----------------------------------------------------
+  -- --- Treesitter parsers (configured via AstroCore in v6) -------------------
   {
-    "nvim-treesitter/nvim-treesitter",
+    "AstroNvim/astrocore",
     opts = function(_, opts)
-      opts.ensure_installed = require("astrocore").list_insert_unique(opts.ensure_installed, {
+      opts.treesitter = opts.treesitter or {}
+      opts.treesitter.ensure_installed = require("astrocore").list_insert_unique(opts.treesitter.ensure_installed, {
         "lua",
         "vim",
         "odin",
@@ -222,12 +212,11 @@ return {
   -- --- None-ls sources -------------------------------------------------------
   {
     "nvimtools/none-ls.nvim",
-    opts = function(_, config)
+    opts = function(_, opts)
       local null_ls = require "null-ls"
-      config.sources = {
+      opts.sources = require("astrocore").list_insert_unique(opts.sources, {
         null_ls.builtins.formatting.erb_format,
-      }
-      return config
+      })
     end,
   },
 
@@ -256,7 +245,7 @@ return {
             end,
             desc = "Pick to close",
           },
-          ["<Leader>b"] = { name = "Buffers" },
+          ["<Leader>b"] = { desc = "Buffers" },
           -- diagnostics-yank
           ["<Leader>ly"] = { function() yank_diagnostics "buffer" end, desc = "Yank buffer diagnostics" },
           ["<Leader>lY"] = { function() yank_diagnostics "all" end, desc = "Yank all diagnostics" },
