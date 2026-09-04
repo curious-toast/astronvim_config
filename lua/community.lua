@@ -1,6 +1,9 @@
 -- AstroCommunity: import any community modules here
 -- We import this file in `lazy_setup.lua` before the `plugins/` folder.
 -- This guarantees that the specs are processed before any user plugins.
+--
+-- Carry-over file #2 (with lua/plugins/user.lua). Drop both onto a fresh
+-- template; no edits to lazy_setup.lua or any other scaffolding needed.
 
 ---@type LazySpec
 return {
@@ -16,10 +19,16 @@ return {
   { import = "astrocommunity.pack.helm" },
   { import = "astrocommunity.pack.yaml" },
   { import = "astrocommunity.pack.python" },
-  { import = "astrocommunity.pack.html-css" },
+  { import = "astrocommunity.pack.cs" },
+  { import = "astrocommunity.pack.terraform" },
+  { import = "astrocommunity.pack.godot" },
+  { import = "astrocommunity.pack.cpp" },
+  { import = "astrocommunity.pack.ruby" },
+  { import = "astrocommunity.pack.rust" },
+  { import = "astrocommunity.pack.elixir" },
+  -- { import = "astrocommunity.pack.odin" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
-  { import = "astrocommunity.project/nvim-spectre" },
+  { import = "astrocommunity.search.nvim-spectre" },
   { import = "astrocommunity.markdown-and-latex.markdown-preview-nvim" },
-  { import = "astrocommunity.completion.copilot-lua-cmp" },
-  -- import/override with your plugins folder
+  -- { import = "astrocommunity.programming-language-support.rest-nvim" },
 }

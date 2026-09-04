@@ -1,56 +1,36 @@
 #!/bin/bash
+# AstroNvim config manager.
+#
+# The config lives in THIS repo and is symlinked to ~/.config/nvim, so edits
+# here are live. There is no deploy step. Use ":Lazy update" inside nvim for
+# plugin updates.
 
-test() {
-	rm -rf ~/.config/nvim.bak
-	rm -rf ~/.local/share/nvim.bak
-	rm -rf ~/.local/state/nvim.bak
-	rm -rf ~/.cache/nvim.bak
+set -euo pipefail
 
-	mv ~/.config/nvim ~/.config/nvim.bak
-	mv ~/.local/share/nvim ~/.local/share/nvim.bak
-	mv ~/.local/state/nvim ~/.local/state/nvim.bak
-	mv ~/.cache/nvim ~/.cache/nvim.bak
+REPO="$HOME/development/repos/astronvim_config"
+CONFIG="$HOME/.config/nvim"
 
-	mkdir -p ~/.config/nvim
-
-	cp -r ~/development/repos/astronvim_config/* ~/.config/nvim/
-
-	nvim
+link() {
+	# Create or repair the ~/.config/nvim -> repo symlink.
+	if [ -L "$CONFIG" ]; then
+		rm "$CONFIG"
+	elif [ -e "$CONFIG" ]; then
+		mv "$CONFIG" "$CONFIG.bak.$(date +%s)"
+		echo "Moved existing config dir to a .bak dir."
+	fi
+	ln -s "$REPO" "$CONFIG"
+	echo "Linked $CONFIG -> $REPO"
 }
 
-update() {
-	rm -rf ~/.config/nvim.bak
-	rm -rf ~/.local/share/nvim.bak
-	rm -rf ~/.local/state/nvim.bak
-	rm -rf ~/.cache/nvim.bak
-
-	mv ~/.config/nvim ~/.config/nvim.bak
-	mv ~/.local/share/nvim ~/.local/share/nvim.bak
-	mv ~/.local/state/nvim ~/.local/state/nvim.bak
-	mv ~/.cache/nvim ~/.cache/nvim.bak
-
-	git clone https://github.com/curious-toast/astronvim_config.git ~/.config/nvim
-
-	nvim
-}
-
-revert() {
-	mv ~/.config/nvim.bak ~/.config/nvim
-	mv ~/.local/share/nvim.bak ~/.local/share/nvim
-	mv ~/.local/state/nvim.bak ~/.local/state/nvim
-	mv ~/.cache/nvim.bak ~/.cache/nvim
-
-	nvim
+clean() {
+	# Remove plugin data, state, and cache. Keeps the config symlink.
+	rm -rf "$HOME/.local/share/nvim" "$HOME/.local/state/nvim" "$HOME/.cache/nvim"
+	echo "Cleared nvim data, state, and cache. Next launch reinstalls plugins."
 }
 
 reset() {
-	rm -rf ~/.config/nvim
-	rm -rf ~/.local/share/nvim
-	rm -rf ~/.local/state/nvim
-	rm -rf ~/.cache/nvim
-
-	git clone https://github.com/curious-toast/astronvim_config.git ~/.config/nvim
-
+	# Full clean reinstall, then start nvim.
+	clean
 	nvim
 }
 
@@ -58,31 +38,20 @@ help() {
 	echo "Usage: $0 COMMAND"
 	echo ""
 	echo "Commands:"
-	echo "  test      Backup existing Neovim configuration and install the local changes."
-	echo "  update    Backup existing Neovim configuration and install the latest version."
-	echo "  revert    Restore the previous Neovim configuration from backup."
-	echo "  reset     Remove existing Neovim configuration and install a fresh copy."
-	echo "  help      Display this help message."
+	echo "  link    Create or repair the ~/.config/nvim -> repo symlink."
+	echo "  clean   Remove plugin data, state, and cache. Keeps the symlink."
+	echo "  reset   Clean, then start nvim for a fresh plugin install."
+	echo "  help    Show this message."
 	echo ""
-	echo "This script manages the Neovim configuration, allowing easy updates, reverts, or resets."
+	echo "The config lives in this repo and is symlinked to ~/.config/nvim."
+	echo "Edit files here; changes are live. Use ':Lazy update' for plugin updates."
 }
 
-case "$1" in
-test)
-	test
-	;;
-update)
-	update
-	;;
-revert)
-	revert
-	;;
-reset)
-	reset
-	;;
-help)
-	help
-	;;
+case "${1:-help}" in
+link) link ;;
+clean) clean ;;
+reset) reset ;;
+help) help ;;
 *)
 	help
 	exit 1
