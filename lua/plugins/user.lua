@@ -121,6 +121,10 @@ return {
           header = dashboard_header,
         },
       },
+      -- Scratch buffers. Keymaps live in the AstroCore mappings block below.
+      --   <Leader>.  toggle scratch buffer (per cwd + git branch)
+      --   <Leader>S  select a scratch buffer
+      scratch = {},
     },
   },
 
@@ -250,6 +254,9 @@ return {
           -- diagnostics-yank
           ["<Leader>ly"] = { function() yank_diagnostics "buffer" end, desc = "Yank buffer diagnostics" },
           ["<Leader>lY"] = { function() yank_diagnostics "all" end, desc = "Yank all diagnostics" },
+          -- Scratch buffers (snacks.scratch)
+          ["<Leader>."] = { function() require("snacks").scratch() end, desc = "Toggle scratch buffer" },
+          ["<Leader>S"] = { function() require("snacks").scratch.select() end, desc = "Select scratch buffer" },
         },
         t = {
           ["<C-\\>"] = { "<Cmd>ToggleTerm<CR>", desc = "Toggle Terminal" },

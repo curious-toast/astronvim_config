@@ -1,0 +1,13 @@
+customCommands:
+  - key: <f1>
+    context: global
+    description: Rebase current branch onto main/master
+    command: |
+      base="$(git show-ref --verify --quiet refs/heads/main && echo main || echo master)"
+      if [ "$(gh repo view --json isFork -q .isFork 2>/dev/null)" = "true" ]; then
+        gh repo sync -b "$base" && git rebase "$base"
+      else
+        git fetch origin "$base" && git rebase "origin/$base"
+      fi
+    loadingText: Syncing fork and rebasing onto main/master
+    output: log
