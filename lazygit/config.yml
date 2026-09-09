@@ -5,7 +5,7 @@ customCommands:
     command: |
       base="$(git show-ref --verify --quiet refs/heads/main && echo main || echo master)"
       if [ "$(gh repo view --json isFork -q .isFork 2>/dev/null)" = "true" ]; then
-        gh repo sync -b "$base" && git push origin "$base" && git rebase "$base"
+        gh repo sync -b "$base" && git push origin "$base" && git rebase "origin/$base"
       else
         git fetch origin "$base" && git rebase "origin/$base"
       fi
